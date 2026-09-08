@@ -1,4 +1,4 @@
-# DevfSeek — Frontend (Parte 1)
+# ChatGPDevf — Frontend
 
 Aplicación React + Vite con **Tailwind CSS v4** y **React Hook Form** para
 validación avanzada de formularios. Primera entrega del proyecto final del
