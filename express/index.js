@@ -1,17 +1,10 @@
-import express from 'express'
-
-// Crea la aplicación de Express.
-const app = express()
+import { app } from './app.js'
 
 // Puerto configurable por variable de entorno (por defecto 3000).
 const PORT = process.env.PORT ?? 3000
 
-// Endpoint básico: responde "Hola Mundo" en la raíz.
-app.get('/', (req, res) => {
-  res.send('Hola Mundo')
-})
-
-// Inicia el servidor y queda a la escucha de peticiones.
+// Arranque local: pone el servidor a la escucha. En Vercel no se usa este
+// archivo, sino la función serverless de api/index.js.
 app.listen(PORT, () => {
   console.log(`Servidor Express escuchando en http://localhost:${PORT}`)
 })
