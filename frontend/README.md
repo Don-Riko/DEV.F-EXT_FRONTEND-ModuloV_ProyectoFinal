@@ -22,6 +22,24 @@ npm run preview # previsualiza el build
 npm run lint    # análisis estático con ESLint
 ```
 
+## Parte 3 · Estado global con useContext (tema)
+
+Demuestra el patrón `useContext` de forma aislada con un **contexto de tema**
+(claro/oscuro), evitando el *prop drilling* del tema por toda la interfaz.
+
+- **`src/context/ThemeContext.js`** — contexto creado con `createContext`.
+- **`src/context/ThemeProvider.jsx`** — Provider que envuelve la aplicación,
+  gestiona el tema con `useState`, lo persiste en `localStorage` y respeta la
+  preferencia del sistema.
+- **`src/context/useTheme.js`** — hook que consume el contexto con
+  `useContext`.
+
+El botón del encabezado (`App.jsx`) alterna el tema, y los componentes `Chat`
+e `History` consumen `useTheme` para adaptar sus estilos.
+
+> El estado del chat (Parte 2) también usa `useContext` combinado con
+> `useReducer` en `src/context/`.
+
 ## Parte 2 · Chat con IA (Ollama)
 
 Integra un chat con IA consumiendo el servicio local de Ollama.
