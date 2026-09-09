@@ -1,14 +1,16 @@
 import { useChat } from '../context/useChat.js'
+import { useTheme } from '../context/useTheme.js'
 
 /**
  * Componente History.
  *
  * Muestra el listado de conversaciones previas guardadas en el estado
  * global. Permite recuperar una conversación para continuarla o eliminarla
- * del historial.
+ * del historial. Consume el tema activo mediante useTheme (useContext).
  */
 function History() {
   const { historial, cargarConversacion, eliminarDelHistorial } = useChat()
+  const { esOscuro } = useTheme()
 
   const formatearFecha = (iso) =>
     new Date(iso).toLocaleString('es-MX', {
@@ -18,14 +20,27 @@ function History() {
       minute: '2-digit',
     })
 
+  const t = {
+    panel: esOscuro
+      ? 'border-slate-700 bg-slate-800/60'
+      : 'border-slate-300 bg-white',
+    titulo: esOscuro ? 'text-slate-400' : 'text-slate-500',
+    vacio: esOscuro ? 'text-slate-500' : 'text-slate-400',
+    item: esOscuro
+      ? 'border-slate-700 bg-slate-900/60'
+      : 'border-slate-200 bg-slate-50',
+    itemTitulo: esOscuro ? 'text-slate-200' : 'text-slate-800',
+    itemFecha: esOscuro ? 'text-slate-500' : 'text-slate-400',
+  }
+
   return (
-    <aside className="flex h-full flex-col rounded-2xl border border-slate-700 bg-slate-800/60 p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
+    <aside className={`flex h-full flex-col rounded-2xl border p-4 ${t.panel}`}>
+      <h2 className={`mb-3 text-sm font-semibold uppercase tracking-wide ${t.titulo}`}>
         Historial
       </h2>
 
       {historial.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className={`text-sm ${t.vacio}`}>
           Aún no hay conversaciones guardadas.
         </p>
       ) : (
@@ -33,7 +48,7 @@ function History() {
           {historial.map((conversacion) => (
             <li
               key={conversacion.id}
-              className="group flex items-start justify-between gap-2 rounded-lg border border-slate-700 bg-slate-900/60 p-2 hover:border-indigo-500/60"
+              className={`group flex items-start justify-between gap-2 rounded-lg border p-2 hover:border-indigo-500/60 ${t.item}`}
             >
               <button
                 type="button"
@@ -41,10 +56,10 @@ function History() {
                 className="flex-1 text-left"
                 title="Recuperar esta conversación"
               >
-                <span className="block truncate text-sm text-slate-200">
+                <span className={`block truncate text-sm ${t.itemTitulo}`}>
                   {conversacion.titulo}
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className={`block text-xs ${t.itemFecha}`}>
                   {formatearFecha(conversacion.fecha)} ·{' '}
                   {conversacion.mensajes.length} mensajes
                 </span>
