@@ -3,6 +3,10 @@ name: Desplegar en GitHub Pages
 on:
   push:
     branches: [main]
+    # El backend vive en express/ y se despliega en Vercel, no en Pages.
+    # Ignorarlo evita redesplegar el frontend por cambios solo de backend.
+    paths-ignore:
+      - 'express/**'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +41,11 @@ jobs:
 
       - name: Construir el proyecto
         run: npm run build
+        env:
+          # URL pública del backend en Vercel. Se define como variable del
+          # repositorio (Settings > Secrets and variables > Actions > Variables).
+          # Si no está definida, el frontend usa el backend local por defecto.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
