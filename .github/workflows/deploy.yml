@@ -22,6 +22,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Se asocia al environment github-pages para poder leer su variable
+    # VITE_API_URL (definida en Settings > Environments > github-pages).
+    environment: github-pages
     defaults:
       run:
         working-directory: frontend
