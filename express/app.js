@@ -1,5 +1,4 @@
 import express from 'express'
-import cors from 'cors'
 
 /**
  * Aplicación de Express de ChatGPDevf.
@@ -12,10 +11,38 @@ export const app = express()
 
 app.use(express.json())
 
-// CORS: permite el consumo desde el frontend (GitHub Pages) u otros orígenes.
-// Se puede restringir con la variable CORS_ORIGIN (lista separada por comas).
-const origenes = process.env.CORS_ORIGIN?.split(',').map((o) => o.trim())
-app.use(cors({ origin: origenes && origenes.length ? origenes : true }))
+// CORS explícito.
+//
+// En el entorno serverless de Vercel el middleware `cors` no siempre añade
+// la cabecera Access-Control-Allow-Origin a las respuestas reales (GET/POST),
+// lo que provoca que el navegador bloquee la lectura y el frontend lo
+// interprete como "sin conexión". Para evitarlo, se establecen las cabeceras
+// CORS manualmente en todas las respuestas y se responde el preflight OPTIONS.
+//
+// CORS_ORIGIN puede fijar una lista de orígenes permitidos (separados por
+// comas); si no se define, se refleja el origen de la petición.
+const origenesPermitidos = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : null
+
+app.use((req, res, next) => {
+  const origen = req.headers.origin
+  if (origen && (!origenesPermitidos || origenesPermitidos.includes(origen))) {
+    res.setHeader('Access-Control-Allow-Origin', origen)
+  } else if (!origenesPermitidos) {
+    // Sin restricción configurada y sin cabecera Origin (p. ej. curl).
+    res.setHeader('Access-Control-Allow-Origin', '*')
+  }
+  res.setHeader('Vary', 'Origin')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  // Responde de inmediato a las peticiones de verificación previa (preflight).
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204)
+  }
+  next()
+})
 
 // Configuración de Ollama (opcional). Si no está accesible, se usa un modo
 // de respaldo (mock) para que la interacción funcione en cualquier entorno,
