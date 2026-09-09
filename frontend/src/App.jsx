@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import Chat from './components/Chat.jsx'
 import History from './components/History.jsx'
+import LoginForm from './components/LoginForm.jsx'
 import RegisterForm from './components/RegisterForm.jsx'
 import ProfileWidget from './components/ProfileWidget.jsx'
 import { useTheme } from './context/useTheme.js'
@@ -27,7 +29,11 @@ function ThemeToggle() {
 
 function App() {
   const { esOscuro } = useTheme()
-  const { autenticado } = useUser()
+  const { autenticado, hayUsuarios } = useUser()
+
+  // Vista de autenticación: 'login' o 'registro'. Por defecto login si ya
+  // existe alguna cuenta; registro si aún no hay ninguna.
+  const [vista, setVista] = useState(hayUsuarios ? 'login' : 'registro')
 
   const fondo = esOscuro
     ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
@@ -35,8 +41,9 @@ function App() {
   const tituloColor = esOscuro ? 'text-white' : 'text-slate-900'
   const subtituloColor = esOscuro ? 'text-slate-400' : 'text-slate-600'
 
-  // Pantalla 1: registro (mientras no haya un perfil creado).
+  // Pantalla de autenticación (login o registro) mientras no haya sesión.
   if (!autenticado) {
+    const esLogin = vista === 'login'
     return (
       <div className={`min-h-screen px-4 py-10 transition-colors ${fondo}`}>
         <div className="mx-auto w-full max-w-md">
@@ -46,16 +53,22 @@ function App() {
           <header className="mb-8 text-center">
             <h1 className={`text-3xl font-bold ${tituloColor}`}>ChatGPDevf</h1>
             <p className={`mt-2 ${subtituloColor}`}>
-              Crea tu cuenta para empezar a chatear con la IA
+              {esLogin
+                ? 'Inicia sesión para continuar'
+                : 'Crea tu cuenta para empezar a chatear con la IA'}
             </p>
           </header>
-          <RegisterForm />
+          {esLogin ? (
+            <LoginForm onCrearCuenta={() => setVista('registro')} />
+          ) : (
+            <RegisterForm onIrALogin={() => setVista('login')} />
+          )}
         </div>
       </div>
     )
   }
 
-  // Pantalla 2: Dashboard del chatbot con widget de perfil.
+  // Dashboard del chatbot con widget de perfil.
   return (
     <div className={`min-h-screen px-4 py-6 transition-colors ${fondo}`}>
       <div className="mx-auto max-w-5xl">

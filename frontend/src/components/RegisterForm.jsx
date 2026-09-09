@@ -13,7 +13,7 @@ import { useUser } from '../context/useUser.js'
  * Al enviarse correctamente, registra el perfil en el contexto de usuario,
  * lo que da paso al Dashboard del chatbot.
  */
-function RegisterForm() {
+function RegisterForm({ onIrALogin }) {
   const { registrar } = useUser()
 
   const {
@@ -21,6 +21,7 @@ function RegisterForm() {
     handleSubmit,
     watch,
     reset,
+    setError,
     formState: { errors, isSubmitting, isValid },
   } = useForm({
     mode: 'onBlur',
@@ -39,9 +40,17 @@ function RegisterForm() {
   const onSubmit = async (data) => {
     // Simula una petición asíncrona breve antes de crear la sesión.
     await new Promise((resolve) => setTimeout(resolve, 600))
-    // Registra el perfil en el contexto (da paso al Dashboard).
-    // La contraseña no se persiste ni se muestra.
-    registrar({ nombre: data.nombre, email: data.email })
+    // Registra la cuenta y abre sesión. La contraseña se persiste solo en
+    // localStorage (ejercicio educativo) y no se muestra de vuelta.
+    const resultado = registrar({
+      nombre: data.nombre,
+      email: data.email,
+      password: data.password,
+    })
+    if (!resultado.ok) {
+      setError('email', { type: 'manual', message: resultado.error })
+      return
+    }
     reset()
   }
 
@@ -185,6 +194,18 @@ function RegisterForm() {
       >
         {isSubmitting ? 'Registrando…' : 'Crear cuenta'}
       </button>
+
+      {/* Enlace inferior para volver al inicio de sesión */}
+      <p className="text-center text-sm text-slate-400">
+        ¿Ya tienes cuenta?{' '}
+        <button
+          type="button"
+          onClick={onIrALogin}
+          className="font-medium text-indigo-400 hover:text-indigo-300 hover:underline"
+        >
+          Inicia sesión
+        </button>
+      </p>
     </form>
   )
 }
