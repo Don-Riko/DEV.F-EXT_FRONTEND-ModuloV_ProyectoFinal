@@ -19,20 +19,12 @@ app.use(express.json())
 // interprete como "sin conexión". Para evitarlo, se establecen las cabeceras
 // CORS manualmente en todas las respuestas y se responde el preflight OPTIONS.
 //
-// CORS_ORIGIN puede fijar una lista de orígenes permitidos (separados por
-// comas); si no se define, se refleja el origen de la petición.
-const origenesPermitidos = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
-  : null
-
+// Se refleja el origen que envía el navegador (o "*" si no hay Origin, p. ej.
+// peticiones con curl). La API es pública, por lo que no se restringe por
+// origen.
 app.use((req, res, next) => {
   const origen = req.headers.origin
-  if (origen && (!origenesPermitidos || origenesPermitidos.includes(origen))) {
-    res.setHeader('Access-Control-Allow-Origin', origen)
-  } else if (!origenesPermitidos) {
-    // Sin restricción configurada y sin cabecera Origin (p. ej. curl).
-    res.setHeader('Access-Control-Allow-Origin', '*')
-  }
+  res.setHeader('Access-Control-Allow-Origin', origen || '*')
   res.setHeader('Vary', 'Origin')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')

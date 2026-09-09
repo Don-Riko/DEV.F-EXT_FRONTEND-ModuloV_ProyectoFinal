@@ -41,7 +41,9 @@ ollama serve
 | `OLLAMA_URL`    | `http://localhost:11434/api/generate`   | Endpoint de generación de Ollama.            |
 | `OLLAMA_MODEL`  | `deepseek-r1:1.5b`                       | Modelo a usar.                               |
 | `OLLAMA_TIMEOUT`| `20000`                                 | Tiempo máximo (ms) antes de pasar al mock.   |
-| `CORS_ORIGIN`   | (todos)                                 | Orígenes permitidos, separados por comas.    |
+
+> CORS: la API es pública y refleja el origen de la petición en la cabecera
+> `Access-Control-Allow-Origin`, por lo que **no requiere configuración**.
 
 ## Endpoints
 
@@ -66,9 +68,7 @@ El backend está preparado para Vercel mediante `vercel.json` y la función
 
 1. Importa el repositorio en Vercel.
 2. En **Root Directory**, selecciona `express/`.
-3. (Opcional) Define variables de entorno como `CORS_ORIGIN` con la URL de
-   GitHub Pages.
-4. Despliega. La URL pública resultante se usa en el frontend a través de
+3. Despliega. La URL pública resultante se usa en el frontend a través de
    `VITE_API_URL`.
 
 > Nota: Vercel no puede alojar Ollama ni el modelo (límites de tamaño y tiempo
