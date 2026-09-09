@@ -23,7 +23,7 @@ function Chat() {
     mensajes,
     cargando,
     disponible,
-    model,
+    fuente,
     preguntar,
     limpiarConversacion,
     guardarEnHistorial,
@@ -80,14 +80,27 @@ function Chat() {
             }`}
             title={
               disponible === null
-                ? 'Comprobando conexión con Ollama…'
+                ? 'Comprobando conexión con el backend…'
                 : disponible
-                  ? 'Ollama conectado'
-                  : 'Ollama no disponible'
+                  ? 'Backend conectado'
+                  : 'Backend no disponible'
             }
           />
           <span className={`text-sm ${t.textoTenue}`}>
-            Modelo: <span className={t.textoFuerte}>{model}</span>
+            Backend:{' '}
+            <span className={t.textoFuerte}>
+              {disponible === null
+                ? 'comprobando…'
+                : disponible
+                  ? 'conectado'
+                  : 'sin conexión'}
+            </span>
+            {fuente && (
+              <span className={t.textoFuerte}>
+                {' · '}
+                {fuente === 'ollama' ? 'IA: Ollama' : 'IA: demo'}
+              </span>
+            )}
           </span>
         </div>
         <div className="flex gap-2">

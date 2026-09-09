@@ -12,7 +12,7 @@ import { useOllama } from '../hooks/useOllama.js'
  */
 export function ChatProvider({ children }) {
   const [estado, dispatch] = useReducer(chatReducer, estadoInicial)
-  const { cargando, error, disponible, model, enviarPrompt } = useOllama()
+  const { cargando, error, disponible, fuente, enviarPrompt } = useOllama()
 
   // Envía la consulta del usuario y agrega la respuesta de la IA.
   const preguntar = useCallback(
@@ -69,7 +69,7 @@ export function ChatProvider({ children }) {
       cargando,
       error,
       disponible,
-      model,
+      fuente,
       preguntar,
       limpiarConversacion,
       guardarEnHistorial,
@@ -82,7 +82,7 @@ export function ChatProvider({ children }) {
       cargando,
       error,
       disponible,
-      model,
+      fuente,
       preguntar,
       limpiarConversacion,
       guardarEnHistorial,
