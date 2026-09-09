@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useUser } from '../context/useUser.js'
 
 /**
  * Formulario de registro con validación avanzada usando React Hook Form.
@@ -9,9 +9,12 @@ import { useForm } from 'react-hook-form'
  * - Validación cruzada entre campos (confirmar contraseña con `validate`).
  * - Estado de envío (`isSubmitting`) y errores por campo.
  * - Modo de validación "onBlur" para una mejor experiencia de usuario.
+ *
+ * Al enviarse correctamente, registra el perfil en el contexto de usuario,
+ * lo que da paso al Dashboard del chatbot.
  */
 function RegisterForm() {
-  const [enviado, setEnviado] = useState(null)
+  const { registrar } = useUser()
 
   const {
     register,
@@ -34,10 +37,11 @@ function RegisterForm() {
   const password = watch('password')
 
   const onSubmit = async (data) => {
-    // Simula una petición asíncrona (por ejemplo, a un backend Express).
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    // Nunca mostramos la contraseña de vuelta al usuario.
-    setEnviado({ nombre: data.nombre, email: data.email })
+    // Simula una petición asíncrona breve antes de crear la sesión.
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    // Registra el perfil en el contexto (da paso al Dashboard).
+    // La contraseña no se persiste ni se muestra.
+    registrar({ nombre: data.nombre, email: data.email })
     reset()
   }
 
@@ -181,17 +185,6 @@ function RegisterForm() {
       >
         {isSubmitting ? 'Registrando…' : 'Crear cuenta'}
       </button>
-
-      {/* Mensaje de éxito */}
-      {enviado && (
-        <div
-          className="rounded-lg border border-emerald-600 bg-emerald-900/30 px-4 py-3 text-sm text-emerald-300"
-          role="status"
-        >
-          ¡Cuenta creada, {enviado.nombre}! Te enviamos un correo a{' '}
-          <span className="font-medium">{enviado.email}</span>.
-        </div>
-      )}
     </form>
   )
 }
