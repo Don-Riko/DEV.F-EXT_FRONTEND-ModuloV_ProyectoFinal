@@ -4,8 +4,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * URL base del backend. En desarrollo apunta al Express local; en producción
  * (GitHub Pages) se inyecta la URL pública del backend en Vercel mediante la
  * variable de entorno de Vite VITE_API_URL.
+ *
+ * Se normaliza quitando la barra final para evitar rutas con doble barra
+ * (p. ej. "https://app.vercel.app//api/chat").
  */
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(
+  /\/+$/,
+  '',
+)
 
 /**
  * Custom hook para consumir la API de chat del backend.
@@ -21,6 +27,8 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
  * @param {string} [opciones.apiUrl] URL base del backend.
  */
 export function useOllama({ apiUrl = API_URL } = {}) {
+  // Normaliza por si se recibe una URL con barra final.
+  const base = apiUrl.replace(/\/+$/, '')
   const [respuesta, setRespuesta] = useState('')
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
@@ -37,7 +45,7 @@ export function useOllama({ apiUrl = API_URL } = {}) {
 
     async function comprobarDisponibilidad() {
       try {
-        const res = await fetch(`${apiUrl}/api/health`, {
+        const res = await fetch(`${base}/api/health`, {
           signal: controller.signal,
         })
         setDisponible(res.ok)
@@ -48,7 +56,7 @@ export function useOllama({ apiUrl = API_URL } = {}) {
 
     comprobarDisponibilidad()
     return () => controller.abort()
-  }, [apiUrl])
+  }, [base])
 
   // Limpia cualquier petición pendiente al desmontar.
   useEffect(() => {
@@ -73,7 +81,7 @@ export function useOllama({ apiUrl = API_URL } = {}) {
       setRespuesta('')
 
       try {
-        const res = await fetch(`${apiUrl}/api/chat`, {
+        const res = await fetch(`${base}/api/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt }),
@@ -103,7 +111,7 @@ export function useOllama({ apiUrl = API_URL } = {}) {
         setCargando(false)
       }
     },
-    [apiUrl],
+    [base],
   )
 
   return { respuesta, cargando, error, disponible, fuente, enviarPrompt }
