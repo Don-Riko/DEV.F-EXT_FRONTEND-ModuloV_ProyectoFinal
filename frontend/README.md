@@ -22,6 +22,35 @@ npm run preview # previsualiza el build
 npm run lint    # análisis estático con ESLint
 ```
 
+## Proyecto Final · Sitio integrado
+
+Condensa las cuatro entregas en una sola aplicación:
+
+1. **Pantalla de registro** (React Hook Form). Al enviarse, el perfil se
+   guarda en el `UserContext` y da paso al Dashboard.
+2. **Dashboard del chatbot** (Chat + History) con un **widget de perfil**: un
+   círculo con las iniciales del usuario (p. ej. "Ada Lovelace" → "AL"), sus
+   datos y la opción de cerrar sesión.
+
+Las peticiones de IA se consumen **desde el backend** (`POST /api/chat`), cuya
+URL se configura con `VITE_API_URL`:
+
+```bash
+# frontend/.env
+VITE_API_URL=http://localhost:3000        # backend local
+# VITE_API_URL=https://<tu-app>.vercel.app  # backend en Vercel (producción)
+```
+
+Contextos (`useContext`):
+
+- `UserContext` — perfil del usuario (registro, iniciales, sesión).
+- `ChatContext` — mensajes e historial (`useReducer`) + consumo del backend.
+- `ThemeContext` — tema claro/oscuro.
+
+> El backend (carpeta `express/`) se despliega en Vercel y el frontend en
+> GitHub Pages. El workflow de Pages ignora `express/**` e inyecta
+> `VITE_API_URL` en el build.
+
 ## Parte 3 · Estado global con useContext (tema)
 
 Demuestra el patrón `useContext` de forma aislada con un **contexto de tema**
